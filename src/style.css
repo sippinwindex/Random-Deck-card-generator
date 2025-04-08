@@ -14,12 +14,18 @@
 body {
     font-family: 'Poppins', sans-serif;
     min-height: 100vh;
+    /* Use padding to prevent content hitting edges on mobile */
+    padding-top: 20px;
+    padding-bottom: 20px;
     display: flex;
-    justify-content: center;
+    flex-direction: column; /* Allow vertical stacking */
+    justify-content: flex-start; /* Align items to top */
     align-items: center;
-    background-color: #3d5a4f; /* Dark green base */
+    background-color: #3d5a4f;
     background-image: url('https://www.transparenttextures.com/patterns/felt.png');
-    overflow: hidden;
+    /* Allow scrolling if content exceeds viewport height */
+    overflow-x: hidden; /* Prevent horizontal scroll */
+    overflow-y: auto;
     position: relative;
     transition: filter 0.3s ease-in-out;
 }
@@ -32,407 +38,445 @@ main {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 30px;
-    padding: 20px;
+    gap: 20px; /* Reduced default gap slightly */
+    padding: 15px; /* Reduced default padding */
+    width: 100%; /* Ensure main takes available width */
+    max-width: 1200px; /* Optional max width for very large screens */
     z-index: 10;
 }
 
 .card-container {
-    padding: 20px; /* Ensure space for shadow/glow */
+    padding: 15px; /* Reduced padding */
 }
 
+/* --- Base Card Styles (Target Card) --- */
 .card {
     width: var(--card-width);
     height: var(--card-height);
     border-radius: 15px;
     position: relative;
-    overflow: hidden; /* Important for shine effect clipping */
+    overflow: hidden;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, width 0.3s ease, height 0.3s ease;
     background: rgba(255, 255, 255, 0.15);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     border: 1px solid rgba(255, 255, 255, 0.2);
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3), /* Base shadow */
-                0 0 15px rgba(255, 255, 255, 0.1); /* Subtle base glow */
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3), 0 0 15px rgba(255, 255, 255, 0.1);
 }
 
-.card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0; bottom: 0;
+/* Hover/Shine effects (less relevant on mobile, but keep for desktop) */
+.card::before { /* Inner glow */
+    content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
     border-radius: 15px;
     background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0) 60%);
     pointer-events: none;
 }
-
-.card::after {
-    content: '';
-    position: absolute;
-    top: 0; left: -150%; width: 100%; height: 100%;
-    background: linear-gradient(
-        110deg,
-        rgba(255, 255, 255, 0) 40%,
-        rgba(255, 255, 255, 0.25) 50%,
-        rgba(255, 255, 255, 0) 60%
-    );
-    transform: skewX(-25deg);
-    pointer-events: none;
-    transition: left 0.8s ease-out;
+.card::after { /* Shine */
+    content: ''; position: absolute; top: 0; left: -150%; width: 100%; height: 100%;
+    background: linear-gradient(110deg, rgba(255, 255, 255, 0) 40%, rgba(255, 255, 255, 0.25) 50%, rgba(255, 255, 255, 0) 60%);
+    transform: skewX(-25deg); pointer-events: none; transition: left 0.8s ease-out;
 }
-
 .card:hover {
     transform: scale(1.03);
-    box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.35),
-                0 0 25px rgba(255, 255, 255, 0.2);
+    box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.35), 0 0 25px rgba(255, 255, 255, 0.2);
 }
+.card:hover::after { left: 150%; transition: left 0.8s ease-out; }
+.card:active { transform: scale(1.01); box-shadow: 0 6px 25px rgba(0, 0, 0, 0.3), 0 0 20px rgba(255, 255, 255, 0.15); }
 
-.card:hover::after {
-    left: 150%;
-    transition: left 0.8s ease-out;
-}
 
-.card:active {
-    transform: scale(1.01);
-    box-shadow: 0 6px 25px rgba(0, 0, 0, 0.3),
-                0 0 20px rgba(255, 255, 255, 0.15);
-}
-
+/* --- Corner/Center elements (Target Card) --- */
 .corner {
-    position: absolute;
-    padding: calc(var(--card-width) * 0.03);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    font-family: 'Oswald', sans-serif;
-    font-weight: bold;
+    position: absolute; padding: calc(var(--card-width) * 0.03); display: flex; flex-direction: column; align-items: center;
+    font-family: 'Oswald', sans-serif; font-weight: bold;
 }
-
-.corner .rank {
-    font-size: calc(var(--card-width) * 0.12);
-    line-height: 1;
-}
-
-.corner .suit {
-    font-size: calc(var(--card-width) * 0.11);
-    margin-top: 2px;
-}
-
+.corner .rank { font-size: calc(var(--card-width) * 0.12); line-height: 1; }
+.corner .suit { font-size: calc(var(--card-width) * 0.11); margin-top: 2px; }
 .top-left { top: 8px; left: 8px; }
 .bottom-right { bottom: 8px; right: 8px; transform: rotate(180deg); }
-
 .center-rank {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-grow: 1;
-    font-family: 'Press Start 2P', cursive;
-    font-size: calc(var(--card-width) * 0.28);
-    line-height: 1;
-    text-align: center;
-    user-select: none;
-    background-image: linear-gradient(
-        var(--gradient-angle),
-        #ff8a00, #e52e71, #6a0dad, #007cf0, #00dfa2
-    );
-    background-size: 300% 300%;
-    background-clip: text;
-    -webkit-background-clip: text;
-    color: transparent; /* Required for gradient */
+    display: flex; justify-content: center; align-items: center; flex-grow: 1;
+    font-family: 'Press Start 2P', cursive; font-size: calc(var(--card-width) * 0.28); line-height: 1;
+    text-align: center; user-select: none;
+    background-image: linear-gradient(var(--gradient-angle), #ff8a00, #e52e71, #6a0dad, #007cf0, #00dfa2);
+    background-size: 300% 300%; background-clip: text; -webkit-background-clip: text; color: transparent;
     animation: gradient-animation 6s ease infinite;
 }
+@keyframes gradient-animation { /* ...same as before... */ }
 
-@keyframes gradient-animation {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-}
+/* Suit Colors (Target Card) */
+.card.red .suit, .card.red .rank { color: #FF0000; }
+.card.black .suit, .card.black .rank { color: #1a1a1a; }
+.card.red .center-rank, .card.black .center-rank { color: transparent; -webkit-text-fill-color: transparent; }
 
-/* Suit Colors */
-.card.red .suit,
-.card.red .rank {
-    color: #FF0000;
-}
-.card.black .suit,
-.card.black .rank {
-    color: #1a1a1a;
-}
 
-/* Ensure center rank always uses gradient */
-.card.red .center-rank,
-.card.black .center-rank {
-    color: transparent;
-    -webkit-text-fill-color: transparent; /* Added for safety */
-}
-
-/* Controls Styling */
+/* --- Controls Styling --- */
 .controls {
-    display: flex; flex-wrap: wrap; justify-content: center; align-items: center;
-    gap: 15px; margin-top: 20px; background: rgba(0, 0, 0, 0.1);
-    padding: 15px; border-radius: 10px;
+    display: flex; flex-wrap: wrap; /* Allows wrapping */ justify-content: center; align-items: center;
+    gap: 10px; /* Reduced gap */ margin-top: 15px; background: rgba(0, 0, 0, 0.1);
+    padding: 10px; /* Reduced padding */ border-radius: 10px; width: 100%; /* Take full width */
 }
 .size-controls {
-    display: flex; align-items: center; gap: 8px;
-    color: #f0f0f0; font-size: 0.9em;
+    display: flex; flex-wrap: wrap; /* Allow inputs/labels to wrap if needed */ justify-content: center; align-items: center; gap: 8px;
+    color: #f0f0f0; font-size: 0.85em; /* Smaller font */
 }
 .size-controls label { margin-right: 2px; }
 .size-controls input[type="number"] {
-    width: 60px; padding: 5px 8px; border-radius: 5px;
+    width: 50px; /* Smaller inputs */ padding: 4px 6px; border-radius: 5px;
     border: 1px solid rgba(255, 255, 255, 0.3); background-color: rgba(255, 255, 255, 0.1);
-    color: #f0f0f0; text-align: center; font-size: 0.9em;
-    -moz-appearance: textfield;
+    color: #f0f0f0; text-align: center; font-size: 1em; /* Relative to parent */
+    -moz-appearance: textfield; appearance: textfield;
 }
 .size-controls input[type="number"]::-webkit-outer-spin-button,
-.size-controls input[type="number"]::-webkit-inner-spin-button {
-    -webkit-appearance: none; margin: 0;
-}
+.size-controls input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+
 .glass-button {
-    padding: 12px 25px; border: 1px solid rgba(255, 255, 255, 0.3); border-radius: 8px;
+    padding: 10px 18px; /* Reduced padding */ border: 1px solid rgba(255, 255, 255, 0.3); border-radius: 8px;
     background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px);
-    color: #f0f0f0; font-family: 'Poppins', sans-serif; font-size: 1em; font-weight: 500;
+    color: #f0f0f0; font-family: 'Poppins', sans-serif; font-size: 0.9em; /* Smaller font */ font-weight: 500;
     cursor: pointer; transition: background-color 0.3s ease, box-shadow 0.3s ease, transform 0.1s ease;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); flex-shrink: 0; /* Prevent buttons shrinking too much */
 }
 .glass-button:hover { background: rgba(255, 255, 255, 0.2); box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15); }
 .glass-button:active { background: rgba(255, 255, 255, 0.15); transform: scale(0.98); box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); }
-.small-button { padding: 8px 12px; font-size: 1.2em; line-height: 1; }
+.small-button { padding: 8px 10px; /* Adjust padding */ font-size: 1.1em; /* Adjust size */ line-height: 1; }
 
-/* CRT Overlay */
-#crt-overlay {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    pointer-events: none; z-index: 5; opacity: 0;
-    background:
-        linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%),
-        linear-gradient(90deg, rgba(255, 0, 0, 0.04), rgba(0, 255, 0, 0.03), rgba(0, 0, 255, 0.04));
-    background-size: 100% 4px, 6px 100%;
-    transition: opacity 0.3s ease-in-out;
-    /* Flicker animation is applied only when .active */
-}
-#crt-overlay.active {
-    opacity: 0.6;
-    animation: flicker 0.15s infinite;
-}
-@keyframes flicker {
-  0% { opacity: calc(0.6 * 0.88); }
-  20% { opacity: calc(0.6 * 0.92); }
-  40% { opacity: calc(0.6 * 0.90); }
-  60% { opacity: calc(0.6 * 0.93); }
-  80% { opacity: calc(0.6 * 0.88); }
-  100% { opacity: calc(0.6 * 0.92); }
-}
-.glass-button.active {
-    background: rgba(255, 255, 255, 0.3);
-    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.2);
+.glass-button.active { /* For CRT Toggle */
+    background: rgba(255, 255, 255, 0.3); box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.2);
 }
 
-/* TASTY SCAN LINES */
-
-/* Style the button itself */
-/* Style the button as a retro TV screen */
 .crt-button {
-    position: relative;
-    display: inline-block;
-    padding: 12px 24px;
-    font-family: 'Press Start 2P', cursive; /* Retro pixel font to match your card */
-    font-size: 14px;
-    color: #00ff00; /* Classic CRT green text */
-    background: #4fa1653e; /* Dark gray for TV screen feel */
-    border: 3px solid #ffffff7a; /* TV bezel-like border */
-    border-radius: 8px; /* Slightly rounded like an old TV */
+    /* Sizing & Layout */
+    padding: 10px 12px;      /* Increased padding for size */
+    font-size: 1.8em;        /* Larger emoji */
+    line-height: 1;          /* Keep emoji centered vertically */
+    height: auto;            /* Allow height to be natural */
+    min-width: 55px;         /* Minimum tap target size */
+    display: inline-flex;    /* Better alignment for single icon */
+    justify-content: center;
+    align-items: center;
+    flex-shrink: 0;          /* Prevent shrinking in flex row */
+
+    /* Appearance */
+    font-family: 'Poppins', sans-serif; /* Fallback font for emoji */
+    color: #00ff00;          /* Neon Green text/icon */
+    background: #d9f776a1;      /* Dark grey background */
+    border: 3px solid #27694b6c; /* Thicker "bezel" border */
+    border-radius: 6px;       /* Slightly rounded corners */
     cursor: pointer;
-    overflow: hidden; /* Clip effects inside the button */
-    box-shadow: 
-        0 0 10px rgba(0, 255, 0, 0.2), /* Subtle green glow */
-        inset 0 0 5px rgba(237, 255, 102, 0.5); /* Inner shadow for depth */
-    transition: transform 0.2s ease, box-shadow 0.3s ease, background 0.3s ease;
+    position: relative;      /* Needed for pseudo-elements */
+    overflow: hidden;        /* Clip effects */
+    /* Noticeable shadow */
+    box-shadow:
+        inset 0 0 6px rgba(151, 151, 151, 0.532), /* Inner shadow for depth */
+        0 0 10px rgba(0, 255, 0, 0.3);  /* Outer green glow */
+
+    transition: all 0.2s ease-out;
 }
 
-/* Static scanlines */
+/* Subtle Scanlines ON the button */
 .crt-button::before {
-    content: "";
+    content: '';
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(
-        to bottom,
-        rgba(0, 0, 0, 0) 50%,
-        rgba(0, 0, 0, 0) 50%
-    );
-    background-size: 100% 3px; /* Thinner scanlines for a sharper look */
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: linear-gradient(rgba(0,0,0,0) 50%, rgba(0,0,0,0.4) 50%);
+    background-size: 100% 4px; /* Horizontal lines */
+    opacity: 0.3;
     pointer-events: none;
     z-index: 1;
 }
 
-/* Moving shine effect */
-.crt-button::after {
-    content: "";
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: linear-gradient(
-        45deg,
-        transparent 40%,
-        rgba(255, 255, 255, 0.3) 50%,
-        transparent 60%
-    );
-    transform: rotate(30deg);
-    pointer-events: none;
-    z-index: 2;
-    transition: all 0.5s ease-out;
-}
-
-/* Text styling */
+/* Style the actual icon/span */
 .crt-button span {
-    position: relative;
-    z-index: 3; /* Above scanlines and shine */
     display: block;
-    text-shadow: 0 0 5px rgba(0, 255, 0, 0.5); /* Glowing text */
+    position: relative; /* Place above pseudo-elements */
+    z-index: 2;
+    text-shadow: 0 0 6px rgba(0, 255, 0, 0.7); /* Make icon glow */
+    /* Optional: Subtle flicker animation just for the icon */
+    /* animation: crt-icon-flicker 0.3s infinite alternate; */
 }
 
-/* Hover effect */
+/* @keyframes crt-icon-flicker {
+    from { opacity: 1; }
+    to { opacity: 0.85; }
+} */
+
+
+/* --- Button States --- */
+
 .crt-button:hover {
-    transform: scale(1.05);
-    background: #f1ff76ba; /* Slightly lighter on hover */
-    box-shadow: 
-        0 0 20px rgba(0, 255, 0, 0.4), /* Brighter glow */
-        inset 0 0 8px rgba(219, 255, 127, 0.405);
+    background: #ffa87f;
+    border-color: #bbbbbbb9;
+    box-shadow:
+        inset 0 0 8px rgba(0,0,0,0.7),
+        0 0 18px rgba(0, 255, 0, 0.5); /* Brighter glow on hover */
+    transform: translateY(-2px) scale(1.03); /* Slight lift */
 }
 
-.crt-button:hover::after {
-    top: 50%;
-    left: 50%;
-}
-
-/* Active (click) effect */
+/* Momentary press state */
 .crt-button:active {
-    transform: scale(0.98);
-    background: #151515; /* Darker on click */
-    box-shadow: 
-        0 0 15px rgba(0, 255, 0, 0.3),
-        inset 0 0 10px rgba(0, 0, 0, 0.7);
+    transform: scale(0.97) translateY(1px); /* Scale down slightly */
+    box-shadow:
+        inset 0 0 10px rgba(0,0,0,0.8),
+        0 0 8px rgba(0, 255, 0, 0.2);
 }
 
-.crt-button:active::after {
-    top: 50%;
-    left: 50%;
-    background: linear-gradient(
-        45deg,
-        transparent 30%,
-        rgba(255, 255, 255, 0.5) 50%,
-        transparent 70%
-    ); /* Stronger shine on click */
+/* Persistent active state (when effect is ON) */
+.crt-button.active {
+    background: #147762; /* Even darker */
+    border-color: #84ad84; /* Bright green border */
+    color: rgba(189, 224, 189, 0.758);          /* Ensure icon stays bright */
+    box-shadow:
+        inset 0 0 12px rgba(148, 204, 148, 0.6), /* Strong green inner glow */
+        0 0 15px rgba(0, 255, 0, 0.5);     /* Outer glow */
 }
 
-/* Optional flicker for extra retro vibe */
-.crt-button span {
-    animation: crt-flicker 0.15s infinite alternate;
+.crt-button.active span {
+     text-shadow: 0 0 10px rgba(185, 247, 185, 0.404); /* Stronger icon glow */
+     /* Optional: turn off flicker when active */
+     /* animation: none; */
 }
 
-@keyframes crt-flicker {
-    0% { opacity: 1; }
-    100% { opacity: 0.92; }
+/* --- Responsive Adjustments for the CRT Button --- */
+@media (max-width: 600px) {
+    .crt-button {
+        padding: 8px 10px;   /* Slightly smaller padding */
+        font-size: 1.5em;    /* Slightly smaller icon */
+        min-width: 48px;     /* Adjust min width */
+        border-width: 2px;   /* Thinner border */
+    }
+
+    .crt-button::before {
+        background-size: 100% 3px; /* Thinner scanlines */
+    }
 }
 
-/* NEW CODE */
-/* Deck Container */
+/* --- END Dedicated CRT Toggle Button Styling --- */
+
+
+/* --- Game Feedback Styling --- */
+.game-feedback {
+    margin-top: 15px; padding: 10px 15px; background: rgba(0, 0, 0, 0.2);
+    color: #f0f0f0; border-radius: 8px; text-align: center; font-size: 0.9em;
+    min-height: 36px; line-height: 1.4; transition: background-color 0.3s ease;
+    width: 95%; /* Limit width slightly */ max-width: 500px; /* Max width */
+    z-index: 15;
+}
+.game-feedback.match { background: rgba(40, 167, 69, 0.5); font-weight: bold; }
+.game-feedback.no-match { background: rgba(220, 53, 69, 0.5); }
+
+
+/* --- Deck Container Styling (Hand) --- */
+/* Base styles for deck */
 .deck {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
+    width: 100%; /* Take full width */
     display: none; /* Hidden by default */
-    justify-content: center;
-    gap: 10px;
-    padding: 10px;
-    z-index: 10;
+    justify-content: center; align-items: center; flex-wrap: wrap; /* Allow wrapping */
+    gap: 10px; /* Default gap */
+    padding: 15px 10px; /* Vertical and horizontal padding */
+    margin-top: 15px; /* Space above the deck */
+    z-index: 20;
+    background: rgba(0, 0, 0, 0.15);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    min-height: 100px; /* Adjust as needed */
+    position: relative; /* Default position */
 }
+.deck.visible { display: flex; } /* Show when visible class is added */
 
-.deck.visible {
-    display: flex;
-}
 
-/* Deck Cards */
+/* --- Deck Card Styling (Hand) --- */
 .deck .card {
-    width: 100px; /* Smaller than the main card */
-    height: 140px;
-    perspective: 1000px; /* For 3D flip effect */
+    width: 80px; /* Smaller default size */
+    height: 112px; /* Maintain aspect ratio ~1.4 */
+    perspective: 1000px;
     cursor: pointer;
-    transition: transform 0.3s ease; /* For hover scaling */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    position: relative;
+    border-radius: 6px; /* Smaller radius */
+    flex-shrink: 0; /* Prevent cards shrinking too much in flex row */
 }
 
-.deck .card:hover {
-    transform: scale(1.1); /* Enlarge on hover */
+/* Hover effect (Desktop) */
+.deck .card:hover:not(.flipped) {
+    transform: scale(1.08) translateY(-5px);
+    box-shadow: 0 6px 20px rgba(0, 255, 255, 0.2);
 }
 
 .deck .card-inner {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    transform-style: preserve-3d;
-    transition: transform 0.6s; /* Smooth flip animation */
+    position: relative; width: 100%; height: 100%;
+    transform-style: preserve-3d; transition: transform 0.6s ease;
+    border-radius: 6px;
 }
+.deck .card.flipped .card-inner { transform: rotateY(180deg); }
 
-.deck .card.flipped .card-inner {
-    transform: rotateY(180deg);
+/* Card Faces (Deck) */
+.deck .face-down, .deck .face-up {
+    position: absolute; width: 100%; height: 100%;
+    backface-visibility: hidden; -webkit-backface-visibility: hidden;
+    border-radius: 6px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4); overflow: hidden;
 }
-
-.deck .face-down,
-.deck .face-up {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    backface-visibility: hidden;
-    border-radius: 10px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-}
-
 .deck .face-down {
-    background-color: #555; /* Gray for face-down; replace with an image if desired */
+    background-color: #4a4a4a;
+    background-image: linear-gradient(45deg, rgba(255,255,255,0.05) 25%, transparent 25%, transparent 75%, rgba(255,255,255,0.05) 75%, rgba(255,255,255,0.05)), linear-gradient(-45deg, rgba(255,255,255,0.05) 25%, transparent 25%, transparent 75%, rgba(255,255,255,0.05) 75%, rgba(255,255,255,0.05));
+    background-size: 15px 15px; /* Smaller pattern */
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
-
 .deck .face-up {
-    transform: rotateY(180deg); /* Initially hidden */
-    background: rgba(255, 255, 255, 0.15);
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    padding: 10px;
+    transform: rotateY(180deg); background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    display: flex; flex-direction: column; justify-content: space-between;
+    padding: 4px; /* Smaller padding */
 }
 
-/* Card Details */
-.deck .corner {
-    position: absolute;
-    padding: 5px;
-    font-family: 'Oswald', sans-serif;
-    font-weight: bold;
-}
-
-.deck .top-left { top: 5px; left: 5px; }
-.deck .bottom-right { bottom: 5px; right: 5px; transform: rotate(180deg); }
+/* Card Details (Deck) - Reduced Sizes */
+.deck .corner { padding: 3px; font-weight: 500; }
+.deck .corner .rank { font-size: 12px; line-height: 1; } /* Reduced */
+.deck .corner .suit { font-size: 11px; margin-top: 1px; } /* Reduced */
+.deck .top-left { top: 4px; left: 4px; } /* Adjust position */
+.deck .bottom-right { bottom: 4px; right: 4px; } /* Adjust position */
 
 .deck .center-rank {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-grow: 1;
-    font-family: 'Press Start 2P', cursive;
-    font-size: 24px;
-    color: #fff;
+    font-size: 18px; /* Reduced */ line-height: 1;
+    background-image: linear-gradient(45deg, #f0f0f0, #c0c0c0);
+    background-clip: text; -webkit-background-clip: text; color: transparent;
+    -webkit-text-fill-color: transparent;
+    padding: 5px 0; /* Add some vertical padding */
+}
+.deck .card.red .suit, .deck .card.red .rank { color: #FF1C1C; }
+.deck .card.black .suit, .deck .card.black .rank { color: #222222; }
+
+/* --- Game State Styling (Deck) --- */
+.deck .card.matched .face-up { box-shadow: 0 0 12px 4px rgba(0, 255, 0, 0.6); border: 2px solid rgba(0, 255, 0, 0.7); }
+.deck .card.no-match .face-up { box-shadow: 0 0 10px 2px rgba(255, 0, 0, 0.5); border: 2px solid rgba(255, 0, 0, 0.5); opacity: 0.85; }
+
+/* --- CRT Overlay --- */
+#crt-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none; z-index: 1000; /* Ensure it's on top */ opacity: 0;
+    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.04), rgba(0, 255, 0, 0.03), rgba(0, 0, 255, 0.04));
+    background-size: 100% 3px, 5px 100%; /* Adjust sizes */
+    transition: opacity 0.3s ease-in-out;
+}
+#crt-overlay.active {
+    opacity: 0.4; /* Adjust intensity */
+    animation: flicker 0.15s infinite;
+}
+@keyframes flicker { /* Use simpler opacity flicker */
+    0% { opacity: 0.35; }
+    50% { opacity: 0.45; }
+    100% { opacity: 0.35; }
 }
 
-/* Suit Colors */
-.deck .card.red .suit,
-.deck .card.red .rank {
-    color: #FF0000;
+/* ========================================= */
+/* =========== RESPONSIVE STYLES =========== */
+/* ========================================= */
+
+@media (max-width: 600px) {
+
+    body {
+        padding-top: 10px;
+        padding-bottom: 10px;
+    }
+
+    main {
+        gap: 15px;
+        padding: 10px;
+    }
+
+    /* Adjust Target card container padding */
+    .card-container {
+        padding: 10px;
+    }
+
+    /* Optional: Make Target Card smaller by default on mobile via JS input */
+    /* Or just recommend smaller inputs to user */
+
+    .controls {
+        gap: 8px;
+        padding: 8px;
+    }
+
+    .size-controls {
+        font-size: 0.8em; /* Even smaller controls text */
+        gap: 5px;
+        width: 100%; /* Make size controls take full width */
+        justify-content: space-around; /* Space out inputs */
+    }
+    .size-controls input[type="number"] {
+        width: 45px; /* Slightly smaller */
+    }
+
+    .glass-button {
+        padding: 8px 14px; /* Smaller buttons */
+        font-size: 0.85em;
+    }
+    .small-button {
+         padding: 6px 8px;
+         font-size: 1em;
+    }
+
+    .game-feedback {
+        font-size: 0.85em;
+        padding: 8px 10px;
+        min-height: 30px;
+    }
+
+    /* --- Deck Adjustments for Mobile --- */
+    .deck {
+        /* position: relative; Already set above */
+        /* bottom: auto; */     /* Already set above */
+        /* margin-top: 15px; */ /* Already set above */
+        padding: 10px 5px;  /* Less padding */
+        gap: 6px;          /* Less gap */
+        min-height: auto;   /* Allow height to shrink */
+        border-top: none;   /* Remove border */
+        background: none;   /* Remove background */
+    }
+
+    .deck .card {
+        width: 60px;        /* Significantly smaller cards */
+        height: 84px;       /* Adjust height (60 * 1.4) */
+        border-radius: 4px; /* Smaller radius */
+    }
+
+    /* Disable deck card hover effect on touch devices */
+    .deck .card:hover:not(.flipped) {
+        transform: none;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4); /* Revert to base shadow */
+    }
+
+    .deck .face-down, .deck .face-up {
+        border-radius: 4px;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3); /* Lighter shadow */
+    }
+    .deck .face-down { background-size: 10px 10px; } /* Even smaller pattern */
+    .deck .face-up { padding: 2px; }
+
+    /* Deck Card Fonts (Mobile) */
+    .deck .corner { padding: 2px; }
+    .deck .corner .rank { font-size: 9px; }
+    .deck .corner .suit { font-size: 8px; margin-top: 0; }
+    .deck .top-left { top: 3px; left: 3px; }
+    .deck .bottom-right { bottom: 3px; right: 3px; }
+    .deck .center-rank { font-size: 14px; padding: 2px 0; }
+
+    /* Game State Glow (Mobile) */
+    .deck .card.matched .face-up { box-shadow: 0 0 8px 2px rgba(0, 255, 0, 0.6); border-width: 1px; }
+    .deck .card.no-match .face-up { box-shadow: 0 0 6px 1px rgba(255, 0, 0, 0.5); border-width: 1px; opacity: 0.9; }
 }
 
-.deck .card.black .suit,
-.deck .card.black .rank {
-    color: #1a1a1a;
+
+/* Optional: Slightly larger adjustments for tablets */
+@media (min-width: 601px) and (max-width: 900px) {
+     .deck .card {
+        width: 75px;
+        height: 105px;
+    }
+     .deck .corner .rank { font-size: 11px; }
+     .deck .corner .suit { font-size: 10px; }
+     .deck .center-rank { font-size: 16px; }
+     .deck { gap: 8px; }
 }

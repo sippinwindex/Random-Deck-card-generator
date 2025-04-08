@@ -2,8 +2,8 @@
 <html lang="en">
    <head>
       <meta charset="UTF-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Random Card Generator</title>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+      <title>Card Match Mini-Game</title>
       <!-- Link to Google Fonts -->
       <link rel="preconnect" href="https://fonts.googleapis.com">
       <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -15,7 +15,7 @@
       <!-- CRT Scanline/Pixelation Overlay -->
       <div id="crt-overlay"></div>
       <main>
-         <!-- Card Display Area -->
+         <!-- Target Card Display Area -->
          <div class="card-container">
             <div id="card" class="card">
                <div class="corner top-left">
@@ -32,25 +32,32 @@
             </div>
          </div>
          <!-- Controls Area -->
+         <!-- In index.html -->
          <div class="controls">
-            <button id="generate-button" class="glass-button">Deal New Card</button>
-            <!-- Inside your .controls div -->
-            <div class="controls">
-               <button id="generate-button" class="glass-button">Deal New Card</button>
-               <div class="size-controls">
-                  <label for="width-input">Width (px):</label>
-                  <input type="number" id="width-input" value="250" min="100" max="500">
-                  <label for="height-input">Height (px):</label>
-                  <input type="number" id="height-input" value="350" min="140" max="700">
-               </div>
-               <button id="crt-toggle" class="crt-button" title="Toggle CRT Effect">
-               <span>📺</span>
-               </button>
+            <button id="generate-button" class="glass-button">Deal Target Card</button>
+            <div class="size-controls">
+               <label for="width-input">Width (px):</label>
+               <input type="number" id="width-input" value="250" min="100" max="500">
+               <label for="height-input">Height (px):</label>
+               <input type="number" id="height-input" value="350" min="140" max="700">
             </div>
+            <button id="deck-button" class="glass-button">Deal Hand</button>
+            <!-- ONLY class="crt-button" -->
+            <button id="crt-toggle" class="crt-button" title="Toggle CRT Effect">
+            <span>📺</span>
+            </button>
+         </div>
+         <!-- Game Feedback Area -->
+         <div id="game-feedback" class="game-feedback">
+            Click "Deal Hand", then click a card below to see if it matches the Target Card's rank or suit!
+         </div>
+         <!-- Deck Container (Hand) -->
+         <div id="deck" class="deck">
+            <!-- Cards will be generated here via JS -->
+         </div>
       </main>
-      <!-- Link to your JavaScript file - IMPORTANT: Should be at the end -->
+      <!-- Link to your JavaScript file -->
       <script src="script.js"></script>
-      <!-- Do not delete this script tag, this is what connects your HTML with the Javascript code -->
       <script type="module" src="/app.js"></script>
    </body>
 </html>

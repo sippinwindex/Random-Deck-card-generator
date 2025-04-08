@@ -250,7 +250,9 @@ document.addEventListener('DOMContentLoaded', () => {
       deckContainer.addEventListener('click', handleHandCardClick);
   } else { console.error("Deck container not found!"); }
 
+  
+
   // Remove the automatic 10-second refresh unless desired for the Target Card
-  // setInterval(dealNewTargetCard, 10000); // Uncomment if you want target card to auto-refresh
+  setInterval(dealNewTargetCard, 10000); // Uncomment if you want target card to auto-refresh
 
 }); // End of DOMContentLoaded
