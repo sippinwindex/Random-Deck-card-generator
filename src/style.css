@@ -1,5 +1,438 @@
-@import "bootstrap/dist/css/bootstrap.min.css";
+/* Define CSS Variables for Card Size */
+:root {
+    --card-width: 250px;
+    --card-height: 350px;
+    --gradient-angle: 45deg;
+}
 
-body{
-    background: white;
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #3d5a4f; /* Dark green base */
+    background-image: url('https://www.transparenttextures.com/patterns/felt.png');
+    overflow: hidden;
+    position: relative;
+    transition: filter 0.3s ease-in-out;
+}
+
+body.pixelated {
+    filter: contrast(1.4) saturate(0.8) brightness(0.9);
+}
+
+main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
+    padding: 20px;
+    z-index: 10;
+}
+
+.card-container {
+    padding: 20px; /* Ensure space for shadow/glow */
+}
+
+.card {
+    width: var(--card-width);
+    height: var(--card-height);
+    border-radius: 15px;
+    position: relative;
+    overflow: hidden; /* Important for shine effect clipping */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3), /* Base shadow */
+                0 0 15px rgba(255, 255, 255, 0.1); /* Subtle base glow */
+}
+
+.card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    border-radius: 15px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0) 60%);
+    pointer-events: none;
+}
+
+.card::after {
+    content: '';
+    position: absolute;
+    top: 0; left: -150%; width: 100%; height: 100%;
+    background: linear-gradient(
+        110deg,
+        rgba(255, 255, 255, 0) 40%,
+        rgba(255, 255, 255, 0.25) 50%,
+        rgba(255, 255, 255, 0) 60%
+    );
+    transform: skewX(-25deg);
+    pointer-events: none;
+    transition: left 0.8s ease-out;
+}
+
+.card:hover {
+    transform: scale(1.03);
+    box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.35),
+                0 0 25px rgba(255, 255, 255, 0.2);
+}
+
+.card:hover::after {
+    left: 150%;
+    transition: left 0.8s ease-out;
+}
+
+.card:active {
+    transform: scale(1.01);
+    box-shadow: 0 6px 25px rgba(0, 0, 0, 0.3),
+                0 0 20px rgba(255, 255, 255, 0.15);
+}
+
+.corner {
+    position: absolute;
+    padding: calc(var(--card-width) * 0.03);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: 'Oswald', sans-serif;
+    font-weight: bold;
+}
+
+.corner .rank {
+    font-size: calc(var(--card-width) * 0.12);
+    line-height: 1;
+}
+
+.corner .suit {
+    font-size: calc(var(--card-width) * 0.11);
+    margin-top: 2px;
+}
+
+.top-left { top: 8px; left: 8px; }
+.bottom-right { bottom: 8px; right: 8px; transform: rotate(180deg); }
+
+.center-rank {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-grow: 1;
+    font-family: 'Press Start 2P', cursive;
+    font-size: calc(var(--card-width) * 0.28);
+    line-height: 1;
+    text-align: center;
+    user-select: none;
+    background-image: linear-gradient(
+        var(--gradient-angle),
+        #ff8a00, #e52e71, #6a0dad, #007cf0, #00dfa2
+    );
+    background-size: 300% 300%;
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent; /* Required for gradient */
+    animation: gradient-animation 6s ease infinite;
+}
+
+@keyframes gradient-animation {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* Suit Colors */
+.card.red .suit,
+.card.red .rank {
+    color: #FF0000;
+}
+.card.black .suit,
+.card.black .rank {
+    color: #1a1a1a;
+}
+
+/* Ensure center rank always uses gradient */
+.card.red .center-rank,
+.card.black .center-rank {
+    color: transparent;
+    -webkit-text-fill-color: transparent; /* Added for safety */
+}
+
+/* Controls Styling */
+.controls {
+    display: flex; flex-wrap: wrap; justify-content: center; align-items: center;
+    gap: 15px; margin-top: 20px; background: rgba(0, 0, 0, 0.1);
+    padding: 15px; border-radius: 10px;
+}
+.size-controls {
+    display: flex; align-items: center; gap: 8px;
+    color: #f0f0f0; font-size: 0.9em;
+}
+.size-controls label { margin-right: 2px; }
+.size-controls input[type="number"] {
+    width: 60px; padding: 5px 8px; border-radius: 5px;
+    border: 1px solid rgba(255, 255, 255, 0.3); background-color: rgba(255, 255, 255, 0.1);
+    color: #f0f0f0; text-align: center; font-size: 0.9em;
+    -moz-appearance: textfield;
+}
+.size-controls input[type="number"]::-webkit-outer-spin-button,
+.size-controls input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none; margin: 0;
+}
+.glass-button {
+    padding: 12px 25px; border: 1px solid rgba(255, 255, 255, 0.3); border-radius: 8px;
+    background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px);
+    color: #f0f0f0; font-family: 'Poppins', sans-serif; font-size: 1em; font-weight: 500;
+    cursor: pointer; transition: background-color 0.3s ease, box-shadow 0.3s ease, transform 0.1s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+.glass-button:hover { background: rgba(255, 255, 255, 0.2); box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15); }
+.glass-button:active { background: rgba(255, 255, 255, 0.15); transform: scale(0.98); box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); }
+.small-button { padding: 8px 12px; font-size: 1.2em; line-height: 1; }
+
+/* CRT Overlay */
+#crt-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none; z-index: 5; opacity: 0;
+    background:
+        linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%),
+        linear-gradient(90deg, rgba(255, 0, 0, 0.04), rgba(0, 255, 0, 0.03), rgba(0, 0, 255, 0.04));
+    background-size: 100% 4px, 6px 100%;
+    transition: opacity 0.3s ease-in-out;
+    /* Flicker animation is applied only when .active */
+}
+#crt-overlay.active {
+    opacity: 0.6;
+    animation: flicker 0.15s infinite;
+}
+@keyframes flicker {
+  0% { opacity: calc(0.6 * 0.88); }
+  20% { opacity: calc(0.6 * 0.92); }
+  40% { opacity: calc(0.6 * 0.90); }
+  60% { opacity: calc(0.6 * 0.93); }
+  80% { opacity: calc(0.6 * 0.88); }
+  100% { opacity: calc(0.6 * 0.92); }
+}
+.glass-button.active {
+    background: rgba(255, 255, 255, 0.3);
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+/* TASTY SCAN LINES */
+
+/* Style the button itself */
+/* Style the button as a retro TV screen */
+.crt-button {
+    position: relative;
+    display: inline-block;
+    padding: 12px 24px;
+    font-family: 'Press Start 2P', cursive; /* Retro pixel font to match your card */
+    font-size: 14px;
+    color: #00ff00; /* Classic CRT green text */
+    background: #4fa1653e; /* Dark gray for TV screen feel */
+    border: 3px solid #ffffff7a; /* TV bezel-like border */
+    border-radius: 8px; /* Slightly rounded like an old TV */
+    cursor: pointer;
+    overflow: hidden; /* Clip effects inside the button */
+    box-shadow: 
+        0 0 10px rgba(0, 255, 0, 0.2), /* Subtle green glow */
+        inset 0 0 5px rgba(237, 255, 102, 0.5); /* Inner shadow for depth */
+    transition: transform 0.2s ease, box-shadow 0.3s ease, background 0.3s ease;
+}
+
+/* Static scanlines */
+.crt-button::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        to bottom,
+        rgba(0, 0, 0, 0) 50%,
+        rgba(0, 0, 0, 0) 50%
+    );
+    background-size: 100% 3px; /* Thinner scanlines for a sharper look */
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* Moving shine effect */
+.crt-button::after {
+    content: "";
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+        45deg,
+        transparent 40%,
+        rgba(255, 255, 255, 0.3) 50%,
+        transparent 60%
+    );
+    transform: rotate(30deg);
+    pointer-events: none;
+    z-index: 2;
+    transition: all 0.5s ease-out;
+}
+
+/* Text styling */
+.crt-button span {
+    position: relative;
+    z-index: 3; /* Above scanlines and shine */
+    display: block;
+    text-shadow: 0 0 5px rgba(0, 255, 0, 0.5); /* Glowing text */
+}
+
+/* Hover effect */
+.crt-button:hover {
+    transform: scale(1.05);
+    background: #f1ff76ba; /* Slightly lighter on hover */
+    box-shadow: 
+        0 0 20px rgba(0, 255, 0, 0.4), /* Brighter glow */
+        inset 0 0 8px rgba(219, 255, 127, 0.405);
+}
+
+.crt-button:hover::after {
+    top: 50%;
+    left: 50%;
+}
+
+/* Active (click) effect */
+.crt-button:active {
+    transform: scale(0.98);
+    background: #151515; /* Darker on click */
+    box-shadow: 
+        0 0 15px rgba(0, 255, 0, 0.3),
+        inset 0 0 10px rgba(0, 0, 0, 0.7);
+}
+
+.crt-button:active::after {
+    top: 50%;
+    left: 50%;
+    background: linear-gradient(
+        45deg,
+        transparent 30%,
+        rgba(255, 255, 255, 0.5) 50%,
+        transparent 70%
+    ); /* Stronger shine on click */
+}
+
+/* Optional flicker for extra retro vibe */
+.crt-button span {
+    animation: crt-flicker 0.15s infinite alternate;
+}
+
+@keyframes crt-flicker {
+    0% { opacity: 1; }
+    100% { opacity: 0.92; }
+}
+
+/* NEW CODE */
+/* Deck Container */
+.deck {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: none; /* Hidden by default */
+    justify-content: center;
+    gap: 10px;
+    padding: 10px;
+    z-index: 10;
+}
+
+.deck.visible {
+    display: flex;
+}
+
+/* Deck Cards */
+.deck .card {
+    width: 100px; /* Smaller than the main card */
+    height: 140px;
+    perspective: 1000px; /* For 3D flip effect */
+    cursor: pointer;
+    transition: transform 0.3s ease; /* For hover scaling */
+}
+
+.deck .card:hover {
+    transform: scale(1.1); /* Enlarge on hover */
+}
+
+.deck .card-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transform-style: preserve-3d;
+    transition: transform 0.6s; /* Smooth flip animation */
+}
+
+.deck .card.flipped .card-inner {
+    transform: rotateY(180deg);
+}
+
+.deck .face-down,
+.deck .face-up {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+.deck .face-down {
+    background-color: #555; /* Gray for face-down; replace with an image if desired */
+}
+
+.deck .face-up {
+    transform: rotateY(180deg); /* Initially hidden */
+    background: rgba(255, 255, 255, 0.15);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 10px;
+}
+
+/* Card Details */
+.deck .corner {
+    position: absolute;
+    padding: 5px;
+    font-family: 'Oswald', sans-serif;
+    font-weight: bold;
+}
+
+.deck .top-left { top: 5px; left: 5px; }
+.deck .bottom-right { bottom: 5px; right: 5px; transform: rotate(180deg); }
+
+.deck .center-rank {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-grow: 1;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 24px;
+    color: #fff;
+}
+
+/* Suit Colors */
+.deck .card.red .suit,
+.deck .card.red .rank {
+    color: #FF0000;
+}
+
+.deck .card.black .suit,
+.deck .card.black .rank {
+    color: #1a1a1a;
 }
